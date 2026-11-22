@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang Bio Cá Nhân</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & Inter cho hiển thị tiếng Việt sắc nét -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Thư viện tạo mã QR gọn nhẹ cho tính năng Chia sẻ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="antialiased selection:bg-indigo-500/30 min-h-screen overflow-x-hidden transition-colors duration-500">
+
+  <!-- Hiệu ứng ánh sáng nền dịu mắt -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none transition-all duration-700">
+    <div id="blob-1" class="absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-40 transition-colors duration-700"></div>
+    <div id="blob-2" class="absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-35 transition-colors duration-700"></div>
+    <div id="blob-3" class="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-30 transition-colors duration-700"></div>
+  </div>
+
+  <!-- Thanh công cụ nổi góc trên bên phải -->
+  <header class="fixed top-4 right-4 left-4 sm:left-auto z-40 flex items-center justify-end gap-2 pointer-events-none">
+    <div id="toolbar-container" class="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl backdrop-blur-xl border shadow-lg transition-all duration-300">
+      <!-- Nút đổi nhanh giao diện -->
+      <button
+        id="quick-theme-btn"
+        type="button"
+        title="Đổi nhanh giao diện màu sắc"
+        class="p-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center"
+        aria-label="Đổi nhanh giao diện màu sắc"
+      >
+        <span id="quick-theme-icon" class="w-4 h-4 block"></span>
+      </button>
+
+      <!-- Nút thêm nhanh liên kết -->
+      <button
+        id="quick-add-link-btn"
+        type="button"
+        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span class="hidden sm:inline">Thêm link</span>
+      </button>
+
+      <!-- Nút Chia sẻ QR -->
+      <button
+        id="open-share-btn"
+        type="button"
+        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+        <span class="hidden md:inline">Chia sẻ</span>
+      </button>
+
+      <!-- Nút Xuất file index.html -->
+      <button
+        id="export-html-btn"
+        type="button"
+        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span class="hidden md:inline">Xuất HTML</span>
+      </button>
+
+      <!-- Nút mở bảng Tùy chỉnh -->
+      <button
+        id="open-editor-btn"
+        type="button"
+        class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span>Tùy chỉnh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Nội dung chính của trang Bio -->
+  <main class="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 pt-24 pb-16 sm:pt-28 sm:pb-20">
+    <!-- Input ẩn tải ảnh đại diện từ thiết bị -->
+    <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
+
+    <!-- PHẦN 1: THÔNG TIN CHUNG (KHÔNG CHỨA THÔNG TIN LIÊN HỆ MẠNG XÃ HỘI / EMAIL) -->
+    <section class="flex flex-col items-center text-center mb-8 sm:mb-10">
+      <!-- Ảnh đại diện tròn -->
+      <div class="relative group mb-5">
+        <button
+          id="avatar-trigger"
+          type="button"
+          title="Nhấn để tải ảnh đại diện mới"
+          class="relative block w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 transition-transform duration-300 group-hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          <div id="avatar-ring" class="w-full h-full rounded-full p-0.5 transition-all duration-500 shadow-lg">
+            <img
+              id="profile-avatar"
+              src="https://placehold.co/240x240/1e293b/f8fafc?text=BIO"
+              onerror="this.onerror=null;this.src='https://placehold.co/240x240/1e293b/f8fafc?text=BIO';"
+              alt="Ảnh đại diện"
+              class="w-full h-full object-cover rounded-full shadow-inner"
+            />
+          </div>
+          <!-- Lớp phủ đổi ảnh khi di chuột -->
+          <div class="absolute inset-1 rounded-full bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-white">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-[10px] font-semibold">Đổi ảnh</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Tên hiển thị -->
+      <div class="flex items-center justify-center gap-2 mb-1">
+        <h1 id="profile-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight"></h1>
+        <span id="profile-verified" title="Đã xác minh" class="inline-flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-sky-400 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+          </svg>
+        </span>
+      </div>
+
+      <!-- Phụ đề -->
+      <p id="profile-subtitle" class="text-xs sm:text-sm font-semibold tracking-wide mb-3"></p>
+
+      <!-- Mô tả ngắn -->
+      <p id="profile-bio" class="text-sm sm:text-base max-w-lg leading-relaxed mb-4"></p>
+
+      <!-- Nhãn trạng thái (tùy chọn) -->
+      <div id="status-pill" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md transition-colors duration-300">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span id="profile-status"></span>
+      </div>
+    </section>
+
+    <!-- THANH TÌM KIẾM NHANH (Tự động bật hoặc tùy chọn khi có nhiều link) -->
+    <div id="search-wrapper" class="hidden mb-5">
+      <div class="relative">
+        <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+        </svg>
+        <input
+          id="link-search-input"
+          type="search"
+          placeholder="Tìm kiếm nhanh liên kết..."
+          class="w-full pl-11 pr-4 py-3 rounded-2xl text-sm border backdrop-blur-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- PHẦN 2: DANH SÁCH LIÊN KẾT TÙY CHỈNH (KHÔNG GIỚI HẠN SỐ LƯỢNG) -->
+    <section aria-label="Danh sách liên kết">
+      <div id="links-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- Chân trang -->
+    <footer class="mt-12 pt-6 text-center">
+      <p id="footer-text" class="text-xs opacity-60"></p>
+    </footer>
+  </main>
+
+  <!-- BẢNG TÙY CHỈNH TRỰC QUAN (SLIDE-OVER DRAWER) -->
+  <div id="editor-backdrop" class="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <aside
+      id="editor-drawer"
+      class="fixed top-0 right-0 h-full w-full max-w-md bg-white text-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200"
+    >
+      <!-- Header bảng tùy chỉnh -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200/80 shrink-0">
+        <div>
+          <h2 class="text-base font-bold">Quản lý & Tùy chỉnh Bio</h2>
+          <p class="text-xs text-slate-500">Thêm không giới hạn link • Tự động lưu trên máy</p>
+        </div>
+        <button
+          id="close-editor-btn"
+          type="button"
+          class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+          aria-label="Đóng bảng tùy chỉnh"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Thanh chọn Tab -->
+      <div class="grid grid-cols-3 gap-1 p-2 mx-4 mt-3 bg-slate-100 rounded-xl shrink-0">
+        <button data-tab="links" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Liên kết (<span id="tab-link-count">0</span>)</button>
+        <button data-tab="profile" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Thông tin</button>
+        <button data-tab="theme" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Giao diện</button>
+      </div>
+
+      <!-- Nội dung cuộn của bảng Tùy chỉnh -->
+      <div class="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+
+        <!-- TAB 1: QUẢN LÝ LIÊN KẾT (THÊM BAO NHIÊU TÙY THÍCH) -->
+        <div id="tab-links" class="space-y-4">
+          <div class="flex gap-2">
+            <button
+              id="add-link-btn"
+              type="button"
+              class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Thêm liên kết mới
+            </button>
+          </div>
+
+          <!-- Form thêm / sửa liên kết -->
+          <form id="link-form" class="hidden p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 id="link-form-title" class="text-xs font-bold uppercase tracking-wider text-indigo-600">Thêm liên kết mới</h4>
+              <button id="cancel-link-form" type="button" class="text-xs text-slate-500 hover:text-slate-700 font-medium">Đóng</button>
+            </div>
+            <input type="hidden" id="link-id" />
+
+            <div>
+              <label for="link-title" class="block text-xs font-semibold mb-1">Tiêu đề hiển thị *</label>
+              <input id="link-title" type="text" required placeholder="VD: Kho tải tài liệu, Link dự phòng..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label for="link-url" class="block text-xs font-semibold mb-1">Đường dẫn (URL) *</label>
+              <input id="link-url" type="text" required placeholder="https://..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label for="link-desc" class="block text-xs font-semibold mb-1">Mô tả ngắn (không bắt buộc)</label>
+              <textarea id="link-desc" rows="2" placeholder="Ghi chú ngắn gọn cho liên kết này..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="link-badge" class="block text-xs font-semibold mb-1">Nhãn nổi bật</label>
+                <input id="link-badge" type="text" placeholder="VD: MỚI, HOT..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label for="link-badge-style" class="block text-xs font-semibold mb-1">Màu nhãn</label>
+                <select id="link-badge-style" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="accent">Nổi bật (Cam / Hồng)</option>
+                  <option value="blue">Xanh dương</option>
+                  <option value="green">Xanh lá</option>
+                  <option value="neutral">Tối giản</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="link-icon" class="block text-xs font-semibold mb-1">Biểu tượng</label>
+                <select id="link-icon" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="link">Liên kết chung</option>
+                  <option value="download">Tải xuống</option>
+                  <option value="folder">Thư mục / Kho lưu trữ</option>
+                  <option value="file">Tài liệu / Hướng dẫn</option>
+                  <option value="gamepad">Trò chơi / Ứng dụng</option>
+                  <option value="star">Nổi bật / Đề xuất</option>
+                  <option value="globe">Trang web</option>
+                  <option value="play">Video / Media</option>
+                  <option value="bag">Sản phẩm / Dịch vụ</option>
+                  <option value="sparkles">Khác</option>
+                </select>
+              </div>
+              <div>
+                <label for="link-size" class="block text-xs font-semibold mb-1">Kích thước thẻ</label>
+                <select id="link-size" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="wide">Rộng (Toàn hàng - 2 cột)</option>
+                  <option value="normal">Gọn (Nửa hàng - 1 cột)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex gap-2 pt-1">
+              <button type="submit" class="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:opacity-90 transition">
+                Lưu liên kết
+              </button>
+            </div>
+          </form>
+
+          <!-- Danh sách các liên kết hiện có -->
+          <div id="editor-links-list" class="space-y-2.5"></div>
+
+          <!-- Xóa nhanh toàn bộ liên kết nếu muốn làm lại từ đầu -->
+          <div id="clear-all-wrapper" class="pt-3 border-t border-slate-200">
+            <button
+              id="request-clear-links-btn"
+              type="button"
+              class="w-full py-2 px-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-xs font-medium transition-colors"
+            >
+              Xóa toàn bộ liên kết hiện tại
+            </button>
+            <div id="confirm-clear-links-box" class="hidden mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 space-y-2">
+              <p class="text-xs text-rose-700 font-medium">Xóa sạch tất cả liên kết để tự thêm mới từ đầu?</p>
+              <div class="flex gap-2">
+                <button id="confirm-clear-links-yes" type="button" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 transition">Xóa hết</button>
+                <button id="confirm-clear-links-no" type="button" class="flex-1 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium">Hủy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CHỈNH SỬA THÔNG TIN TRANG (HOÀN TOÀN KHÔNG CÓ MỤC LIÊN HỆ) -->
+        <div id="tab-profile" class="hidden space-y-4">
+          <!-- Ảnh đại diện -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+            <div class="flex items-center gap-3.5">
+              <img id="editor-avatar-preview" src="https://placehold.co/240x240/1e293b/f8fafc?text=BIO" alt="Xem trước ảnh đại diện" class="w-14 h-14 rounded-full object-cover border border-slate-200 shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold mb-1.5">Ảnh đại diện</p>
+                <div class="flex flex-wrap gap-2">
+                  <button id="editor-upload-avatar-btn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                    Tải ảnh lên
+                  </button>
+                  <button id="editor-reset-avatar-btn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 hover:bg-slate-100 transition">
+                    Mặc định
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label for="input-avatar-url" class="block text-[11px] font-medium text-slate-500 mb-1">Hoặc dán đường dẫn ảnh (URL)</label>
+              <input id="input-avatar-url" type="url" placeholder="https://..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          </div>
+
+          <div>
+            <label for="input-name" class="block text-xs font-semibold mb-1.5">Tên hiển thị</label>
+            <input id="input-name" type="text" placeholder="Nhập tên trang Bio của bạn" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <label for="input-subtitle" class="block text-xs font-semibold mb-1.5">Phụ đề ngắn (để trống nếu không cần)</label>
+            <input id="input-subtitle" type="text" placeholder="VD: Kho lưu trữ & liên kết" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div class="flex items-center justify-between py-1">
+            <label for="input-verified" class="text-xs font-semibold">Hiển thị biểu tượng tích xanh</label>
+            <input id="input-verified" type="checkbox" class="w-4 h-4 rounded accent-indigo-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label for="input-bio" class="block text-xs font-semibold mb-1.5">Mô tả giới thiệu</label>
+            <textarea id="input-bio" rows="3" placeholder="Viết vài dòng mô tả về trang liên kết của bạn..." class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="input-status" class="block text-xs font-semibold mb-1.5">Dòng trạng thái (để trống để ẩn)</label>
+            <input id="input-status" type="text" placeholder="VD: Cập nhật liên tục" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <label for="input-footer" class="block text-xs font-semibold mb-1.5">Chữ chân trang (Footer)</label>
+            <input id="input-footer" type="text" placeholder="VD: © 2026 • Tổng hợp liên kết" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <!-- TAB 3: GIAO DIỆN & TIỆN ÍCH -->
+        <div id="tab-theme" class="hidden space-y-4">
+          <p class="text-xs text-slate-500">Chọn bảng màu hiển thị cho trang Bio:</p>
+          <div id="theme-grid" class="grid grid-cols-1 gap-3"></div>
+
+          <!-- Bật / tắt thanh tìm kiếm link -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-bold text-slate-800">Hiển thị thanh tìm kiếm link</p>
+              <p class="text-[11px] text-slate-500">Hữu ích khi bạn thêm nhiều liên kết</p>
+            </div>
+            <input id="input-show-search" type="checkbox" class="w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0" />
+          </div>
+
+          <!-- Khôi phục mặc định -->
+          <div class="pt-3 border-t border-slate-200">
+            <button
+              id="request-reset-btn"
+              type="button"
+              class="w-full py-2.5 px-4 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors"
+            >
+              Khôi phục cài đặt mặc định
+            </button>
+            <div id="confirm-reset-box" class="hidden mt-3 p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-2.5">
+              <p class="text-xs text-rose-700 font-medium">Bạn có chắc muốn đặt lại toàn bộ trang về trạng thái ban đầu không?</p>
+              <div class="flex gap-2">
+                <button id="confirm-reset-yes" type="button" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 transition">Xác nhận</button>
+                <button id="confirm-reset-no" type="button" class="flex-1 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium">Hủy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer bảng Tùy chỉnh -->
+      <div class="p-4 border-t border-slate-200/80 shrink-0">
+        <button id="drawer-export-btn" type="button" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Tải xuống file index.html (bản sạch để đăng web)
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- HỘP THOẠI CHIA SẺ & MÃ QR -->
+  <div id="share-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-3xl bg-white text-slate-900 border border-slate-200 shadow-2xl p-6 relative">
+      <button
+        id="close-share-btn"
+        type="button"
+        class="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:bg-slate-100 transition"
+        aria-label="Đóng hộp thoại chia sẻ"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="text-center mb-5">
+        <h3 class="text-lg font-bold">Chia sẻ trang Bio</h3>
+        <p class="text-xs text-slate-500 mt-1">Quét mã QR hoặc sao chép đường dẫn bên dưới</p>
+      </div>
+
+      <div class="flex justify-center mb-5">
+        <div class="p-4 bg-white rounded-2xl shadow-inner border border-slate-200 inline-block">
+          <div id="qrcode-container" class="w-44 h-44 flex items-center justify-center"></div>
+        </div>
+      </div>
+
+      <div>
+        <label for="share-url-input" class="block text-[11px] font-semibold text-slate-500 mb-1">Đường dẫn trang web</label>
+        <div class="flex gap-2">
+          <input
+            id="share-url-input"
+            type="text"
+            placeholder="https://..."
+            class="flex-1 min-w-0 px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            id="copy-share-url-btn"
+            type="button"
+            class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shrink-0 transition"
+          >
+            Sao chép
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THÔNG BÁO TOAST NỔI -->
+  <div
+    id="toast-container"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] pointer-events-none transition-all duration-300 opacity-0 translate-y-4"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm font-medium shadow-xl border border-white/10">
+      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+      <span id="toast-message">Đã lưu thành công!</span>
+    </div>
+  </div>
+
+  <!-- SCRIPT CHÍNH: QUẢN LÝ KHÔNG GIỚI HẠN LIÊN KẾT, CHỈNH SỬA THÔNG TIN & XUẤT HTML -->
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // 1. DỮ LIỆU MẶC ĐỊNH (HOÀN TOÀN SẠCH, KHÔNG CHỨA THÔNG TIN LIÊN HỆ CÁ NHÂN)
+      // =========================================================================
+      const STORAGE_KEY = 'custom_bio_links_v1';
+      const DEFAULT_AVATAR = 'https://placehold.co/240x240/1e293b/f8fafc?text=BIO';
+
+      const DEFAULT_DATA = {
+        theme: 'obsidian-dark',
+        showSearch: false,
+        profile: {
+          name: 'Kho Liên Kết Của Tôi',
+          subtitle: 'Tổng hợp liên kết nhanh',
+          verified: false,
+          bio: 'Nơi tập hợp các đường dẫn quan trọng. Nhấn nút "Tùy chỉnh" hoặc "Thêm link" ở góc trên để sửa thông tin và thêm bao nhiêu liên kết tùy thích.',
+          status: 'Đang cập nhật liên tục',
+          avatar: DEFAULT_AVATAR,
+          footer: '© 2026 • Trang tổng hợp liên kết',
+        },
+        links: [
+          {
+            id: 'demo-link-1',
+            title: 'Liên kết nổi bật #1',
+            description: 'Bạn có thể sửa tiêu đề, mô tả, biểu tượng hoặc xóa thẻ mẫu này bất kỳ lúc nào.',
+            url: 'https://example.com',
+            badge: 'NỔI BẬT',
+            badgeStyle: 'accent',
+            icon: 'star',
+            size: 'wide',
+          },
+          {
+            id: 'demo-link-2',
+            title: 'Kho tài liệu / Tải xuống',
+            description: 'Truy cập nhanh các tệp tin và hướng dẫn.',
+            url: 'https://example.com',
+            badge: 'MỚI',
+            badgeStyle: 'blue',
+            icon: 'download',
+            size: 'normal',
+          },
+          {
+            id: 'demo-link-3',
+            title: 'Thư mục lưu trữ',
+            description: 'Tổng hợp nội dung theo từng danh mục.',
+            url: 'https://example.com',
+            badge: '',
+            badgeStyle: 'green',
+            icon: 'folder',
+            size: 'normal',
+          },
+        ],
+      };
+
+      // =========================================================================
+      // 2. CẤU HÌNH 4 GIAO DIỆN MÀU SẮC
+      // =========================================================================
+      const THEME_ORDER = ['obsidian-dark', 'indigo-glow', 'ocean-cyan', 'minimal-light'];
+
+      const THEMES = {
+        'obsidian-dark': {
+          name: 'Đêm Tối Sang Trọng',
+          desc: 'Nền đen sâu tối giản, nổi bật nội dung',
+          preview: ['#09090b', '#27272a', '#6366f1'],
+          body: 'bg-zinc-950 text-zinc-100',
+          blobs: ['bg-indigo-600', 'bg-zinc-700', 'bg-emerald-600'],
+          avatarRing: 'bg-gradient-to-tr from-zinc-400 via-white to-indigo-400',
+          subtitle: 'text-zinc-400',
+          bio: 'text-zinc-300',
+          statusPill: 'bg-zinc-900/80 border-zinc-800 text-zinc-300',
+          toolbar: 'bg-zinc-900/85 border-zinc-800 text-zinc-200',
+          toolbarBtn: 'hover:bg-zinc-800 text-zinc-200',
+          toolbarPrimary: 'bg-white hover:bg-zinc-200 text-zinc-950',
+          searchInput: 'bg-zinc-900/80 border-zinc-800 text-zinc-100 placeholder:text-zinc-500',
+          card: 'bg-zinc-900/75 hover:bg-zinc-900 border-zinc-800 hover:border-zinc-600 text-zinc-100 shadow-lg shadow-black/40',
+          cardWide: 'bg-gradient-to-br from-zinc-900 via-zinc-900 to-indigo-950/50 border-zinc-700/80 hover:border-indigo-400/50 text-white shadow-xl shadow-black/50',
+          cardDesc: 'text-zinc-400',
+          badgeNeutral: 'bg-zinc-800 text-zinc-300 border border-zinc-700',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>',
+        },
+        'indigo-glow': {
+          name: 'Tím Neon Hiện Đại',
+          desc: 'Hiệu ứng kính mờ kết hợp ánh sáng tím xanh',
+          preview: ['#0f0720', '#7c3aed', '#38bdf8'],
+          body: 'bg-[#0b0618] text-slate-100',
+          blobs: ['bg-violet-600', 'bg-fuchsia-600', 'bg-sky-500'],
+          avatarRing: 'bg-gradient-to-tr from-violet-500 via-fuchsia-500 to-sky-400',
+          subtitle: 'text-violet-300',
+          bio: 'text-slate-300',
+          statusPill: 'bg-white/5 border-white/15 text-slate-200',
+          toolbar: 'bg-slate-900/75 border-white/15 text-slate-200',
+          toolbarBtn: 'hover:bg-white/10 text-slate-200',
+          toolbarPrimary: 'bg-violet-600 hover:bg-violet-500 text-white',
+          searchInput: 'bg-white/[0.06] border-white/15 text-white placeholder:text-slate-400',
+          card: 'bg-white/[0.06] hover:bg-white/[0.11] border-white/12 hover:border-violet-400/50 text-slate-100 shadow-lg shadow-black/25',
+          cardWide: 'bg-gradient-to-br from-violet-600/25 via-fuchsia-600/15 to-sky-500/15 hover:from-violet-600/35 hover:to-sky-500/25 border-violet-400/30 hover:border-violet-300/60 text-white shadow-xl shadow-violet-950/40',
+          cardDesc: 'text-slate-300',
+          badgeNeutral: 'bg-white/10 text-violet-200 border border-white/15',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>',
+        },
+        'ocean-cyan': {
+          name: 'Xanh Đại Dương',
+          desc: 'Sắc nét, trẻ trung với tông xanh dương công nghệ',
+          preview: ['#041325', '#0284c7', '#22d3ee'],
+          body: 'bg-[#04101f] text-sky-50',
+          blobs: ['bg-sky-500', 'bg-cyan-500', 'bg-blue-700'],
+          avatarRing: 'bg-gradient-to-tr from-sky-400 via-cyan-300 to-blue-600',
+          subtitle: 'text-cyan-300',
+          bio: 'text-slate-300',
+          statusPill: 'bg-sky-950/60 border-sky-400/25 text-sky-200',
+          toolbar: 'bg-slate-900/80 border-sky-400/20 text-sky-100',
+          toolbarBtn: 'hover:bg-sky-400/15 text-sky-100',
+          toolbarPrimary: 'bg-sky-500 hover:bg-sky-400 text-slate-950',
+          searchInput: 'bg-slate-900/75 border-sky-400/25 text-sky-50 placeholder:text-slate-400',
+          card: 'bg-slate-900/65 hover:bg-slate-900/90 border-sky-400/20 hover:border-cyan-400/50 text-sky-50 shadow-lg shadow-black/30',
+          cardWide: 'bg-gradient-to-br from-sky-600/25 via-cyan-600/15 to-blue-700/20 hover:from-sky-600/35 hover:to-blue-700/30 border-cyan-400/35 hover:border-cyan-300/65 text-white shadow-xl shadow-sky-950/50',
+          cardDesc: 'text-slate-300',
+          badgeNeutral: 'bg-sky-500/15 text-sky-200 border border-sky-400/30',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+        },
+        'minimal-light': {
+          name: 'Tối Giản Sáng',
+          desc: 'Sạch sẽ, thanh lịch và dễ đọc trên mọi màn hình',
+          preview: ['#f8fafc', '#ffffff', '#4f46e5'],
+          body: 'bg-slate-50 text-slate-900',
+          blobs: ['bg-indigo-200', 'bg-sky-200', 'bg-violet-200'],
+          avatarRing: 'bg-gradient-to-tr from-indigo-600 via-violet-500 to-sky-500',
+          subtitle: 'text-indigo-600',
+          bio: 'text-slate-600',
+          statusPill: 'bg-white/85 border-slate-200 text-slate-700 shadow-sm',
+          toolbar: 'bg-white/90 border-slate-200 text-slate-700',
+          toolbarBtn: 'hover:bg-slate-100 text-slate-700',
+          toolbarPrimary: 'bg-slate-900 hover:bg-slate-800 text-white',
+          searchInput: 'bg-white/90 border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-sm',
+          card: 'bg-white/85 hover:bg-white border-slate-200/90 hover:border-indigo-300 text-slate-900 shadow-sm hover:shadow-md',
+          cardWide: 'bg-gradient-to-br from-indigo-50 via-white to-sky-50 hover:from-indigo-100/70 hover:to-sky-100/70 border-indigo-200 hover:border-indigo-400 text-slate-900 shadow-md',
+          cardDesc: 'text-slate-600',
+          badgeNeutral: 'bg-slate-100 text-slate-700 border border-slate-200',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+        },
+      };
+
+      // Bộ biểu tượng trung tính cho mọi loại liên kết
+      const ICONS = {
+        link: {
+          color: 'bg-indigo-500/15 text-indigo-400 border-indigo-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>',
+        },
+        download: {
+          color: 'bg-sky-500/15 text-sky-400 border-sky-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>',
+        },
+        folder: {
+          color: 'bg-amber-500/15 text-amber-400 border-amber-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>',
+        },
+        file: {
+          color: 'bg-emerald-500/15 text-emerald-400 border-emerald-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+        },
+        gamepad: {
+          color: 'bg-cyan-500/15 text-cyan-400 border-cyan-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>',
+        },
+        star: {
+          color: 'bg-rose-500/15 text-rose-400 border-rose-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>',
+        },
+        globe: {
+          color: 'bg-blue-500/15 text-blue-400 border-blue-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>',
+        },
+        play: {
+          color: 'bg-pink-500/15 text-pink-400 border-pink-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        },
+        bag: {
+          color: 'bg-teal-500/15 text-teal-400 border-teal-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
+        },
+        sparkles: {
+          color: 'bg-violet-500/15 text-violet-400 border-violet-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>',
+        },
+      };
+
+      // =========================================================================
+      // 3. QUẢN LÝ TRẠNG THÁI (STATE) & LOCALSTORAGE
+      // =========================================================================
+      function cloneDefault() {
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return cloneDefault();
+          const parsed = JSON.parse(raw);
+          if (!parsed || !parsed.profile || !Array.isArray(parsed.links)) {
+            return cloneDefault();
+          }
+          if (!THEMES[parsed.theme]) {
+            parsed.theme = 'obsidian-dark';
+          }
+          return parsed;
+        } catch (err) {
+          return cloneDefault();
+        }
+      }
+
+      let state = loadState();
+      let searchQuery = '';
+      let toastTimer = null;
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          // Bỏ qua nếu trình duyệt chặn bộ nhớ cục bộ
+        }
+      }
+
+      // =========================================================================
+      // 4. HÀM TIỆN ÍCH (ESCAPE HTML, CHUẨN HÓA URL, TOAST, CLIPBOARD)
+      // =========================================================================
+      function escapeHTML(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function normalizeUrl(rawUrl) {
+        const trimmed = String(rawUrl || '').trim();
+        if (!trimmed) return '#';
+        if (/^(https?:\/\/|\/|#)/i.test(trimmed)) return trimmed;
+        return 'https://' + trimmed;
+      }
+
+      function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const msgEl = document.getElementById('toast-message');
+        msgEl.textContent = message;
+        container.classList.remove('opacity-0', 'translate-y-4');
+        container.classList.add('opacity-100', 'translate-y-0');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          container.classList.remove('opacity-100', 'translate-y-0');
+          container.classList.add('opacity-0', 'translate-y-4');
+        }, 2500);
+      }
+
+      function copyToClipboard(text, successMsg) {
+        if (!text) return;
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-9999px';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          showToast(successMsg || 'Đã sao chép vào bộ nhớ tạm!');
+        } catch (err) {
+          showToast('Không thể sao chép tự động.');
+        }
+      }
+
+      function getBadgeClass(styleKey, themeObj) {
+        if (styleKey === 'accent') {
+          return 'bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-sm';
+        }
+        if (styleKey === 'blue') {
+          return 'bg-sky-500/20 text-sky-400 border border-sky-400/30';
+        }
+        if (styleKey === 'green') {
+          return 'bg-emerald-500/20 text-emerald-400 border border-emerald-400/30';
+        }
+        return themeObj.badgeNeutral;
+      }
+
+      // =========================================================================
+      // 5. HIỂN THỊ GIAO DIỆN (RENDER)
+      // =========================================================================
+      function applyTheme() {
+        const t = THEMES[state.theme] || THEMES['obsidian-dark'];
+
+        document.body.className = `antialiased selection:bg-indigo-500/30 min-h-screen overflow-x-hidden transition-colors duration-500 ${t.body}`;
+
+        document.getElementById('blob-1').className = `absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-40 transition-colors duration-700 ${t.blobs[0]}`;
+        document.getElementById('blob-2').className = `absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-35 transition-colors duration-700 ${t.blobs[1]}`;
+        document.getElementById('blob-3').className = `absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-30 transition-colors duration-700 ${t.blobs[2]}`;
+
+        document.getElementById('avatar-ring').className = `w-full h-full rounded-full p-0.5 transition-all duration-500 shadow-lg ${t.avatarRing}`;
+        document.getElementById('profile-subtitle').className = `text-xs sm:text-sm font-semibold tracking-wide mb-3 ${t.subtitle}`;
+        document.getElementById('profile-bio').className = `text-sm sm:text-base max-w-lg leading-relaxed mb-4 ${t.bio}`;
+        document.getElementById('status-pill').className = `inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md transition-colors duration-300 ${t.statusPill}`;
+
+        document.getElementById('toolbar-container').className = `pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl backdrop-blur-xl border shadow-lg transition-all duration-300 ${t.toolbar}`;
+        document.getElementById('quick-theme-btn').className = `p-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center ${t.toolbarBtn}`;
+        document.getElementById('quick-add-link-btn').className = `px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5 ${t.toolbarBtn}`;
+        document.getElementById('open-share-btn').className = `px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5 ${t.toolbarBtn}`;
+        document.getElementById('export-html-btn').className = `px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5 ${t.toolbarBtn}`;
+        document.getElementById('open-editor-btn').className = `px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-sm ${t.toolbarPrimary}`;
+        document.getElementById('quick-theme-icon').innerHTML = t.iconToggle;
+
+        document.getElementById('link-search-input').className = `w-full pl-11 pr-4 py-3 rounded-2xl text-sm border backdrop-blur-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${t.searchInput}`;
+      }
+
+      function renderProfile() {
+        const p = state.profile;
+        document.title = p.name ? `${p.name} • Trang Bio` : 'Trang Bio Cá Nhân';
+        document.getElementById('profile-name').textContent = p.name || 'Chưa đặt tên';
+
+        const subEl = document.getElementById('profile-subtitle');
+        if (p.subtitle && p.subtitle.trim() !== '') {
+          subEl.style.display = 'block';
+          subEl.textContent = p.subtitle;
+        } else {
+          subEl.style.display = 'none';
+        }
+
+        document.getElementById('profile-verified').style.display = p.verified ? 'inline-flex' : 'none';
+
+        const bioEl = document.getElementById('profile-bio');
+        if (p.bio && p.bio.trim() !== '') {
+          bioEl.style.display = 'block';
+          bioEl.textContent = p.bio;
+        } else {
+          bioEl.style.display = 'none';
+        }
+
+        const statusPill = document.getElementById('status-pill');
+        if (p.status && p.status.trim() !== '') {
+          statusPill.style.display = 'inline-flex';
+          document.getElementById('profile-status').textContent = p.status;
+        } else {
+          statusPill.style.display = 'none';
+        }
+
+        const avatarSrc = p.avatar || DEFAULT_AVATAR;
+        document.getElementById('profile-avatar').src = avatarSrc;
+        document.getElementById('editor-avatar-preview').src = avatarSrc;
+        document.getElementById('footer-text').textContent = p.footer || '';
+      }
+
+      function renderLinksGrid() {
+        const t = THEMES[state.theme] || THEMES['obsidian-dark'];
+        const grid = document.getElementById('links-grid');
+        const searchWrap = document.getElementById('search-wrapper');
+
+        // Hiện thanh tìm kiếm nếu người dùng bật hoặc có từ 6 liên kết trở lên
+        const shouldShowSearch = state.showSearch || state.links.length >= 6;
+        searchWrap.classList.toggle('hidden', !shouldShowSearch);
+
+        document.getElementById('tab-link-count').textContent = String(state.links.length);
+
+        if (!state.links.length) {
+          grid.innerHTML = `
+            <div class="sm:col-span-2 rounded-3xl p-8 border border-dashed border-current/20 text-center space-y-3">
+              <p class="text-sm opacity-75">Chưa có liên kết nào trong trang Bio của bạn.</p>
+              <button id="empty-add-link-btn" type="button" class="px-4 py-2 rounded-xl text-xs font-semibold transition ${t.toolbarPrimary}">
+                + Thêm liên kết đầu tiên
+              </button>
+            </div>
+          `;
+          const emptyBtn = document.getElementById('empty-add-link-btn');
+          if (emptyBtn) {
+            emptyBtn.addEventListener('click', () => {
+              openEditor('links');
+              openLinkForm(null);
+            });
+          }
+          return;
+        }
+
+        const q = searchQuery.trim().toLowerCase();
+        const filtered = q
+          ? state.links.filter(
+              (l) =>
+                (l.title || '').toLowerCase().includes(q) ||
+                (l.description || '').toLowerCase().includes(q) ||
+                (l.badge || '').toLowerCase().includes(q)
+            )
+          : state.links;
+
+        if (!filtered.length) {
+          grid.innerHTML = `<div class="sm:col-span-2 text-center py-8 opacity-65 text-sm">Không tìm thấy liên kết nào khớp với "<strong>${escapeHTML(searchQuery)}</strong>".</div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered
+          .map((link) => {
+            const isWide = link.size === 'wide';
+            const spanClass = isWide ? 'sm:col-span-2' : 'sm:col-span-1';
+            const cardStyle = isWide ? t.cardWide : t.card;
+            const iconObj = ICONS[link.icon] || ICONS.link;
+            const badgeHtml = link.badge
+              ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${getBadgeClass(link.badgeStyle, t)}">${escapeHTML(link.badge)}</span>`
+              : '';
+            const safeHref = escapeHTML(normalizeUrl(link.url));
+
+            return `
+              <a
+                href="${safeHref}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="${spanClass} group relative rounded-3xl p-5 sm:p-6 border backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] flex flex-col justify-between gap-3.5 ${cardStyle}"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 ${iconObj.color}">
+                    ${iconObj.svg}
+                  </div>
+                  <div class="flex items-center gap-2">
+                    ${badgeHtml}
+                    <span class="w-8 h-8 rounded-full bg-current/5 flex items-center justify-center opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <h2 class="text-base sm:text-lg font-bold leading-snug ${link.description ? 'mb-1.5' : ''}">${escapeHTML(link.title)}</h2>
+                  ${link.description ? `<p class="text-xs sm:text-sm leading-relaxed ${t.cardDesc}">${escapeHTML(link.description)}</p>` : ''}
+                </div>
+              </a>
+            `;
+          })
+          .join('');
+      }
+
+      // =========================================================================
+      // 6. HIỂN THỊ BẢNG TÙY CHỈNH (EDITOR DRAWER)
+      // =========================================================================
+      function renderEditorFields() {
+        const p = state.profile;
+        document.getElementById('input-name').value = p.name || '';
+        document.getElementById('input-subtitle').value = p.subtitle || '';
+        document.getElementById('input-verified').checked = !!p.verified;
+        document.getElementById('input-bio').value = p.bio || '';
+        document.getElementById('input-status').value = p.status || '';
+        document.getElementById('input-footer').value = p.footer || '';
+        document.getElementById('input-avatar-url').value =
+          p.avatar && !p.avatar.startsWith('data:') && p.avatar !== DEFAULT_AVATAR ? p.avatar : '';
+        document.getElementById('input-show-search').checked = !!state.showSearch;
+      }
+
+      function renderEditorLinksList() {
+        const list = document.getElementById('editor-links-list');
+        const clearWrap = document.getElementById('clear-all-wrapper');
+        clearWrap.classList.toggle('hidden', state.links.length === 0);
+
+        if (!state.links.length) {
+          list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Chưa có liên kết nào. Bấm "Thêm liên kết mới" ở trên để bắt đầu!</p>';
+          return;
+        }
+
+        list.innerHTML = state.links
+          .map((link, idx) => {
+            const sizeLabel = link.size === 'wide' ? '2 cột' : '1 cột';
+            return `
+              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold text-slate-400 shrink-0">#${idx + 1}</span>
+                    <p class="text-xs font-bold truncate">${escapeHTML(link.title)}</p>
+                    <span class="px-1.5 py-0.5 rounded bg-slate-200 text-[10px] font-medium shrink-0">${sizeLabel}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 truncate mt-0.5">${escapeHTML(link.url)}</p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button type="button" data-move-up="${idx}" ${idx === 0 ? 'disabled' : ''} title="Đưa lên" class="p-1.5 rounded-lg hover:bg-slate-200 disabled:opacity-30 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                  </button>
+                  <button type="button" data-move-down="${idx}" ${idx === state.links.length - 1 ? 'disabled' : ''} title="Đưa xuống" class="p-1.5 rounded-lg hover:bg-slate-200 disabled:opacity-30 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                  <button type="button" data-edit-link="${escapeHTML(link.id)}" title="Sửa liên kết" class="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                  <button type="button" data-delete-link="${escapeHTML(link.id)}" title="Xóa liên kết" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        list.querySelectorAll('[data-move-up]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-move-up'));
+            if (idx > 0) {
+              const temp = state.links[idx - 1];
+              state.links[idx - 1] = state.links[idx];
+              state.links[idx] = temp;
+              saveState();
+              renderLinksGrid();
+              renderEditorLinksList();
+            }
+          });
+        });
+
+        list.querySelectorAll('[data-move-down]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-move-down'));
+            if (idx < state.links.length - 1) {
+              const temp = state.links[idx + 1];
+              state.links[idx + 1] = state.links[idx];
+              state.links[idx] = temp;
+              saveState();
+              renderLinksGrid();
+              renderEditorLinksList();
+            }
+          });
+        });
+
+        list.querySelectorAll('[data-edit-link]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-edit-link');
+            const found = state.links.find((l) => l.id === id);
+            if (found) openLinkForm(found);
+          });
+        });
+
+        list.querySelectorAll('[data-delete-link]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-delete-link');
+            state.links = state.links.filter((l) => l.id !== id);
+            saveState();
+            renderLinksGrid();
+            renderEditorLinksList();
+            showToast('Đã xóa liên kết.');
+          });
+        });
+      }
+
+      function renderThemeGrid() {
+        const grid = document.getElementById('theme-grid');
+        grid.innerHTML = THEME_ORDER.map((key) => {
+          const t = THEMES[key];
+          const active = state.theme === key;
+          return `
+            <button
+              type="button"
+              data-select-theme="${key}"
+              class="w-full p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
+                active ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'
+              }"
+            >
+              <div>
+                <p class="text-xs font-bold text-slate-900">${t.name}</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">${t.desc}</p>
+              </div>
+              <div class="flex items-center -space-x-1.5 shrink-0">
+                ${t.preview
+                  .map(
+                    (hex) =>
+                      `<span class="w-5 h-5 rounded-full border-2 border-white shadow-sm" style="background-color:${hex}"></span>`
+                  )
+                  .join('')}
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        grid.querySelectorAll('[data-select-theme]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.theme = btn.getAttribute('data-select-theme');
+            saveState();
+            renderAll();
+            showToast(`Đã đổi giao diện: ${THEMES[state.theme].name}`);
+          });
+        });
+      }
+
+      function renderAll() {
+        applyTheme();
+        renderProfile();
+        renderLinksGrid();
+        renderEditorFields();
+        renderEditorLinksList();
+        renderThemeGrid();
+      }
+
+      // =========================================================================
+      // 7. ĐIỀU KHIỂN DRAWER, FORM THÊM LINK, QR MODAL & XUẤT HTML SẠCH
+      // =========================================================================
+      function openEditor(defaultTab) {
+        if (defaultTab) switchEditorTab(defaultTab);
+        const backdrop = document.getElementById('editor-backdrop');
+        const drawer = document.getElementById('editor-drawer');
+        backdrop.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          backdrop.classList.remove('opacity-0');
+          drawer.classList.remove('translate-x-full');
+        });
+      }
+
+      function closeEditor() {
+        const backdrop = document.getElementById('editor-backdrop');
+        const drawer = document.getElementById('editor-drawer');
+        backdrop.classList.add('opacity-0');
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 300);
+      }
+
+      function switchEditorTab(tabName) {
+        ['links', 'profile', 'theme'].forEach((name) => {
+          const panel = document.getElementById(`tab-${name}`);
+          if (panel) panel.classList.toggle('hidden', name !== tabName);
+        });
+        document.querySelectorAll('.editor-tab').forEach((btn) => {
+          const isActive = btn.getAttribute('data-tab') === tabName;
+          btn.className = isActive
+            ? 'editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all bg-white text-indigo-700 shadow-sm'
+            : 'editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800';
+        });
+      }
+
+      function openLinkForm(linkObj) {
+        const form = document.getElementById('link-form');
+        const formTitle = document.getElementById('link-form-title');
+        form.classList.remove('hidden');
+
+        if (linkObj) {
+          formTitle.textContent = 'Chỉnh sửa liên kết';
+          document.getElementById('link-id').value = linkObj.id;
+          document.getElementById('link-title').value = linkObj.title || '';
+          document.getElementById('link-url').value = linkObj.url || '';
+          document.getElementById('link-desc').value = linkObj.description || '';
+          document.getElementById('link-badge').value = linkObj.badge || '';
+          document.getElementById('link-badge-style').value = linkObj.badgeStyle || 'neutral';
+          document.getElementById('link-icon').value = linkObj.icon || 'link';
+          document.getElementById('link-size').value = linkObj.size || 'wide';
+        } else {
+          formTitle.textContent = 'Thêm liên kết mới';
+          form.reset();
+          document.getElementById('link-id').value = '';
+          document.getElementById('link-icon').value = 'link';
+          document.getElementById('link-size').value = 'wide';
+          document.getElementById('link-badge-style').value = 'blue';
+        }
+        document.getElementById('link-title').focus();
+      }
+
+      function renderQRCode(urlText) {
+        const container = document.getElementById('qrcode-container');
+        container.innerHTML = '';
+        const target = urlText || 'https://example.com';
+        try {
+          if (typeof QRCode !== 'undefined') {
+            new QRCode(container, {
+              text: target,
+              width: 176,
+              height: 176,
+              colorDark: '#0f172a',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M,
+            });
+          } else {
+            container.innerHTML = '<p class="text-xs text-slate-400 text-center">Không tải được thư viện QR.</p>';
+          }
+        } catch (err) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center">Đường dẫn quá dài để tạo mã QR.</p>';
+        }
+      }
+
+      function openShareModal() {
+        const modal = document.getElementById('share-modal');
+        const input = document.getElementById('share-url-input');
+        const defaultUrl =
+          window.location.href && window.location.href.startsWith('http')
+            ? window.location.href
+            : 'https://example.com';
+        input.value = defaultUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        renderQRCode(defaultUrl);
+      }
+
+      function closeShareModal() {
+        const modal = document.getElementById('share-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      function exportStandaloneHTML() {
+        try {
+          const t = THEMES[state.theme] || THEMES['obsidian-dark'];
+          const p = state.profile;
+          const includeSearch = state.showSearch || state.links.length >= 6;
+
+          // Tạo danh sách thẻ liên kết sạch (không phụ thuộc trạng thái lọc tìm kiếm)
+          const prevQuery = searchQuery;
+          searchQuery = '';
+          renderLinksGrid();
+          const linksHtml = document.getElementById('links-grid').innerHTML;
+          searchQuery = prevQuery;
+          renderLinksGrid();
+
+          const standalone = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHTML(p.name || 'Trang Bio')}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Be Vietnam Pro"', 'Inter', 'system-ui', 'sans-serif'] } } } };
+  <\/script>
+</head>
+<body class="antialiased selection:bg-indigo-500/30 min-h-screen overflow-x-hidden ${t.body}">
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-40 ${t.blobs[0]}"></div>
+    <div class="absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-35 ${t.blobs[1]}"></div>
+    <div class="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-30 ${t.blobs[2]}"></div>
+  </div>
+  <main class="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+    <section class="flex flex-col items-center text-center mb-10">
+      <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 mb-5">
+        <div class="w-full h-full rounded-full p-0.5 shadow-lg ${t.avatarRing}">
+          <img src="${escapeHTML(p.avatar || DEFAULT_AVATAR)}" alt="${escapeHTML(p.name || 'Avatar')}" class="w-full h-full object-cover rounded-full" />
+        </div>
+      </div>
+      <div class="flex items-center justify-center gap-2 mb-1">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">${escapeHTML(p.name || '')}</h1>
+        ${
+          p.verified
+            ? '<svg class="w-5 h-5 sm:w-6 sm:h-6 text-sky-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>'
+            : ''
+        }
+      </div>
+      ${p.subtitle ? `<p class="text-xs sm:text-sm font-semibold tracking-wide mb-3 ${t.subtitle}">${escapeHTML(p.subtitle)}</p>` : ''}
+      ${p.bio ? `<p class="text-sm sm:text-base max-w-lg leading-relaxed mb-4 ${t.bio}">${escapeHTML(p.bio)}</p>` : ''}
+      ${
+        p.status
+          ? `<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md ${t.statusPill}">
+              <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+              <span>${escapeHTML(p.status)}</span>
+            </div>`
+          : ''
+      }
+    </section>
+    ${
+      includeSearch
+        ? `<div class="mb-5"><input id="q" type="search" placeholder="Tìm kiếm nhanh liên kết..." class="w-full px-4 py-3 rounded-2xl text-sm border backdrop-blur-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${t.searchInput}" /></div>`
+        : ''
+    }
+    <section><div id="grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">${linksHtml}</div></section>
+    ${p.footer ? `<footer class="mt-12 pt-6 text-center"><p class="text-xs opacity-60">${escapeHTML(p.footer)}</p></footer>` : ''}
+  </main>
+  ${
+    includeSearch
+      ? `<script>
+    var qEl = document.getElementById('q');
+    if (qEl) {
+      qEl.addEventListener('input', function () {
+        var val = qEl.value.trim().toLowerCase();
+        document.querySelectorAll('#grid > a').forEach(function (card) {
+          card.style.display = card.textContent.toLowerCase().indexOf(val) !== -1 ? '' : 'none';
+        });
+      });
+    }
+  <\/script>`
+      : ''
+  }
+</body>
+</html>`;
+
+          const blob = new Blob([standalone], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'index.html';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('Đã tải xuống file index.html bản sạch!');
+        } catch (err) {
+          showToast('Có lỗi khi xuất file HTML.');
+        }
+      }
+
+      // =========================================================================
+      // 8. GÁN SỰ KIỆN TƯƠNG TÁC (EVENT LISTENERS)
+      // =========================================================================
+      function bindEvents() {
+        // Đổi nhanh giao diện
+        document.getElementById('quick-theme-btn').addEventListener('click', () => {
+          const idx = THEME_ORDER.indexOf(state.theme);
+          state.theme = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+          saveState();
+          renderAll();
+          showToast(`Giao diện: ${THEMES[state.theme].name}`);
+        });
+
+        // Thêm nhanh liên kết từ thanh công cụ
+        document.getElementById('quick-add-link-btn').addEventListener('click', () => {
+          openEditor('links');
+          openLinkForm(null);
+        });
+
+        // Mở / đóng bảng tùy chỉnh
+        document.getElementById('open-editor-btn').addEventListener('click', () => openEditor());
+        document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
+        document.getElementById('editor-backdrop').addEventListener('click', (e) => {
+          if (e.target.id === 'editor-backdrop') closeEditor();
+        });
+
+        // Chuyển Tab trong bảng tùy chỉnh
+        document.querySelectorAll('.editor-tab').forEach((btn) => {
+          btn.addEventListener('click', () => switchEditorTab(btn.getAttribute('data-tab')));
+        });
+
+        // Tìm kiếm nhanh trên trang
+        document.getElementById('link-search-input').addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderLinksGrid();
+        });
+
+        // Tải ảnh đại diện trực tiếp từ máy hoặc dán URL
+        const avatarInput = document.getElementById('avatar-file-input');
+        document.getElementById('avatar-trigger').addEventListener('click', () => avatarInput.click());
+        document.getElementById('editor-upload-avatar-btn').addEventListener('click', () => avatarInput.click());
+        document.getElementById('editor-reset-avatar-btn').addEventListener('click', () => {
+          state.profile.avatar = DEFAULT_AVATAR;
+          document.getElementById('input-avatar-url').value = '';
+          saveState();
+          renderProfile();
+          showToast('Đã đặt lại ảnh đại diện mặc định.');
+        });
+
+        avatarInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            state.profile.avatar = ev.target.result;
+            document.getElementById('input-avatar-url').value = '';
+            saveState();
+            renderProfile();
+            showToast('Đã cập nhật ảnh đại diện!');
+          };
+          reader.readAsDataURL(file);
+          avatarInput.value = '';
+        });
+
+        document.getElementById('input-avatar-url').addEventListener('input', (e) => {
+          const val = e.target.value.trim();
+          state.profile.avatar = val || DEFAULT_AVATAR;
+          saveState();
+          renderProfile();
+        });
+
+        // Cập nhật trực tiếp thông tin trang
+        document.getElementById('input-name').addEventListener('input', (e) => {
+          state.profile.name = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-subtitle').addEventListener('input', (e) => {
+          state.profile.subtitle = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-verified').addEventListener('change', (e) => {
+          state.profile.verified = e.target.checked;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-bio').addEventListener('input', (e) => {
+          state.profile.bio = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-status').addEventListener('input', (e) => {
+          state.profile.status = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-footer').addEventListener('input', (e) => {
+          state.profile.footer = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-show-search').addEventListener('change', (e) => {
+          state.showSearch = e.target.checked;
+          saveState();
+          renderLinksGrid();
+        });
+
+        // Form thêm / sửa liên kết (không giới hạn số lượng)
+        document.getElementById('add-link-btn').addEventListener('click', () => openLinkForm(null));
+        document.getElementById('cancel-link-form').addEventListener('click', () => {
+          document.getElementById('link-form').classList.add('hidden');
+        });
+
+        document.getElementById('link-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const id = document.getElementById('link-id').value;
+          const payload = {
+            id: id || 'link-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+            title: document.getElementById('link-title').value.trim(),
+            url: document.getElementById('link-url').value.trim(),
+            description: document.getElementById('link-desc').value.trim(),
+            badge: document.getElementById('link-badge').value.trim(),
+            badgeStyle: document.getElementById('link-badge-style').value,
+            icon: document.getElementById('link-icon').value,
+            size: document.getElementById('link-size').value,
+          };
+
+          if (!payload.title || !payload.url) return;
+
+          if (id) {
+            const idx = state.links.findIndex((l) => l.id === id);
+            if (idx !== -1) state.links[idx] = payload;
+            showToast('Đã cập nhật liên kết!');
+          } else {
+            state.links.push(payload);
+            showToast(`Đã thêm liên kết mới (tổng ${state.links.length} link)!`);
+          }
+
+          saveState();
+          renderLinksGrid();
+          renderEditorLinksList();
+          document.getElementById('link-form').classList.add('hidden');
+        });
+
+        // Xóa sạch toàn bộ liên kết (hộp xác nhận trực tiếp)
+        document.getElementById('request-clear-links-btn').addEventListener('click', () => {
+          document.getElementById('confirm-clear-links-box').classList.remove('hidden');
+        });
+        document.getElementById('confirm-clear-links-no').addEventListener('click', () => {
+          document.getElementById('confirm-clear-links-box').classList.add('hidden');
+        });
+        document.getElementById('confirm-clear-links-yes').addEventListener('click', () => {
+          state.links = [];
+          searchQuery = '';
+          document.getElementById('link-search-input').value = '';
+          saveState();
+          renderLinksGrid();
+          renderEditorLinksList();
+          document.getElementById('confirm-clear-links-box').classList.add('hidden');
+          showToast('Đã xóa toàn bộ liên kết.');
+        });
+
+        // Khôi phục mặc định
+        document.getElementById('request-reset-btn').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.remove('hidden');
+        });
+        document.getElementById('confirm-reset-no').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.add('hidden');
+        });
+        document.getElementById('confirm-reset-yes').addEventListener('click', () => {
+          state = cloneDefault();
+          searchQuery = '';
+          document.getElementById('link-search-input').value = '';
+          saveState();
+          renderAll();
+          document.getElementById('confirm-reset-box').classList.add('hidden');
+          showToast('Đã khôi phục mặc định.');
+        });
+
+        // Chia sẻ & QR Code
+        document.getElementById('open-share-btn').addEventListener('click', openShareModal);
+        document.getElementById('close-share-btn').addEventListener('click', closeShareModal);
+        document.getElementById('share-modal').addEventListener('click', (e) => {
+          if (e.target.id === 'share-modal') closeShareModal();
+        });
+        document.getElementById('share-url-input').addEventListener('input', (e) => {
+          renderQRCode(e.target.value.trim());
+        });
+        document.getElementById('copy-share-url-btn').addEventListener('click', () => {
+          const val = document.getElementById('share-url-input').value.trim();
+          copyToClipboard(val, 'Đã sao chép đường dẫn!');
+        });
+
+        // Xuất file index.html sạch
+        document.getElementById('export-html-btn').addEventListener('click', exportStandaloneHTML);
+        document.getElementById('drawer-export-btn').addEventListener('click', exportStandaloneHTML);
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeEditor();
+            closeShareModal();
+          }
+        });
+      }
+
+      // Khởi chạy ứng dụng
+      switchEditorTab('links');
+      renderAll();
+      bindEvents();
+    })();
+  </script>
+</body>
+</html>
